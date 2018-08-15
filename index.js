@@ -45,19 +45,19 @@ module.exports = {
 
   generateTranslationTree(bundlerOptions) {
     const translationTree = buildTree(this.project, this.opts.inputPath, this.treeGenerator.bind(this));
-    const _bundlerOptions = bundlerOptions || {};
+    const options = bundlerOptions || {};
     const addon = this;
 
     return new TranslationReducer(translationTree, {
       verbose: !this.isSilent,
       outputPath: this.opts.outputPath,
-      filename: _bundlerOptions.filename,
-      wrapEntry: _bundlerOptions.wrapEntry,
+      filename: options.filename,
+      wrapEntry: options.wrapEntry,
+      requiresTranslation: this.opts.requiresTranslation,
+      throwMissingTranslations: this.opts.throwMissingTranslations,
       log() {
         return addon.log.apply(addon, arguments);
-      },
-      requiresTranslation: this.opts.requiresTranslation,
-      throwMissingTranslations: this.opts.throwMissingTranslations
+      }
     });
   },
 
@@ -91,7 +91,7 @@ module.exports = {
   },
 
   treeForApp(tree) {
-    let trees = [tree];
+    const trees = [tree];
 
     if (!this.opts.publicOnly) {
       trees.push(
@@ -123,7 +123,7 @@ module.exports = {
   },
 
   treeForPublic() {
-    let trees = [];
+    const trees = [];
 
     if (!this.opts.disablePolyfill) {
       let appOptions = this.app.options || {};
@@ -156,12 +156,11 @@ module.exports = {
   },
 
   readConfig(environment) {
-    let project = this.app.project;
+    const project = this.app.project;
 
     // NOTE: For ember-cli >= 2.6.0-beta.3, project.configPath() returns absolute path
     // while older ember-cli versions return path relative to project root
-    let configPath = path.dirname(project.configPath());
-    let config = path.join(configPath, 'ember-intl.js');
+    let config = path.join(path.dirname(project.configPath()), 'ember-intl.js');
 
     if (!path.isAbsolute(config)) {
       config = path.join(project.root, config);
@@ -175,7 +174,7 @@ module.exports = {
   },
 
   createOptions(environment) {
-    let addonConfig = Object.assign({}, defaultConfig, this.readConfig(environment));
+    const addonConfig = Object.assign({}, defaultConfig, this.readConfig(environment));
 
     if (typeof addonConfig.requiresTranslation !== 'function') {
       this.log('Configured `requiresTranslation` is not a function. Using default implementation.');
