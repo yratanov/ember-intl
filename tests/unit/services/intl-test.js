@@ -83,6 +83,19 @@ module('service:intl', function(hooks) {
     assert.equal(this.intl.t('foo.bar.baz'), 'baz!');
   });
 
+  test('should be able to insert backslashes when skipping the parser', function(assert) {
+    this.intl.addTranslations(LOCALE, {
+      backslashed: `I am a \\ backslash`
+    });
+
+    assert.equal(
+      this.intl.t('backslashed', {
+        skipParser: true
+      }),
+      `I am a \\ backslash`
+    );
+  });
+
   test('`t` should display last missing translation key when using default', function(assert) {
     assert.equal(
       this.intl.t('does.not.exist', {

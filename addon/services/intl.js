@@ -128,6 +128,10 @@ export default Service.extend(Evented, {
       msg = this.lookup(defaults.shift(), options.locale, assign({}, options, { resilient: defaults.length > 0 }));
     }
 
+    if (options.skipParser === true) {
+      return msg;
+    }
+
     return this.formatMessage(msg, options);
   },
 
